@@ -81,17 +81,121 @@ def import_data(folderName):
         cursor.close()
         conn.close()
 
+
+def insertViewer(uid, email, nickname, street, city, state, zip_code, genres, joined_date, first, last, subscription):
+    pass
+
+
+def addGenre(uid, new_genre):
+    pass
+
+
+def deleteViewer(uid):
+    pass
+
+
+def insertMovie(rid, website_url):
+    pass
+
+
+def insertSession(sid, uid, rid, ep_num, initiate_at, leave_at, quality, device):
+    pass
+
+
+def updateRelease(rid, title):
+    pass
+
+
+def listReleases(uid):
+    pass
+
+
+def popularRelease(N):
+    pass
+
+
+def releaseTitle(sid):
+    pass
+
+
+def activeViewer(N, start_date, end_date):
+    pass
+
+
+def videosViewed(rid):
+    pass
+
+
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: python3 project.py import <folderName>")
+    if len(sys.argv) < 2:
+        print("Usage: python3 project.py <function name> [params...]")
         return
 
-    command = sys.argv[1]
-    folderName = sys.argv[2]
+    func = sys.argv[1]
+    args = sys.argv[2:]
 
-    if command == "import":
-        import_data(folderName)
+    if func == "import":
+        if len(args) != 1:
+            print("Usage: python3 project.py import <folderName>")
+            return
+        import_data(args[0])
+    elif func == "insertViewer":
+        if len(args) != 12:
+            print("Usage: python3 project.py insertViewer <uid> <email> <nickname> <street> <city> <state> <zip> <genres> <joined_date> <first> <last> <subscription>")
+            return
+        insertViewer(*args)
+    elif func == "addGenre":
+        if len(args) != 2:
+            print("Usage: python3 project.py addGenre <uid> <genre>")
+            return
+        addGenre(*args)
+    elif func == "deleteViewer":
+        if len(args) != 1:
+            print("Usage: python3 project.py deleteViewer <uid>")
+            return
+        deleteViewer(*args)
+    elif func == "insertMovie":
+        if len(args) != 2:
+            print("Usage: python3 project.py insertMovie <rid> <website_url>")
+            return
+        insertMovie(*args)
+    elif func == "insertSession":
+        if len(args) != 8:
+            print("Usage: python3 project.py insertSession <sid> <uid> <rid> <ep_num> <initiate_at> <leave_at> <quality> <device>")
+            return
+        insertSession(*args)
+    elif func == "updateRelease":
+        if len(args) != 2:
+            print("Usage: python3 project.py updateRelease <rid> <title>")
+            return
+        updateRelease(*args)
+    elif func == "listReleases":
+        if len(args) != 1:
+            print("Usage: python3 project.py listReleases <uid>")
+            return
+        listReleases(*args)
+    elif func == "popularRelease":
+        if len(args) != 1:
+            print("Usage: python3 project.py popularRelease <N>")
+            return
+        popularRelease(*args)
+    elif func == "releaseTitle":
+        if len(args) != 1:
+            print("Usage: python3 project.py releaseTitle <sid>")
+            return
+        releaseTitle(*args)
+    elif func == "activeViewer":
+        if len(args) != 3:
+            print("Usage: python3 project.py activeViewer <N> <start_date> <end_date>")
+            return
+        activeViewer(*args)
+    elif func == "videosViewed":
+        if len(args) != 1:
+            print("Usage: python3 project.py videosViewed <rid>")
+            return
+        videosViewed(*args)
     else:
-        print("Unknown command")
+        print("Unknown function")
 
-main()
+if __name__ == "__main__":
+    main()
