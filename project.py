@@ -400,14 +400,20 @@ def listReleases(uid):
 
         results = cursor.fetchall()
 
-        if results:
-            for row in results:
-                print(",".join(map(str, row)))
-        else:
-            print("Fail: No reviewed releases found")
+        # if results:
+        #     for row in results:
+        #         print(",".join(map(str, row)))
+        # else:
+        #     # print("Fail: No reviewed releases found")
+        #     print("Fail")
+
+        # 当没有结果时不输出Fail
+        for row in results:
+            print(",".join(map(str, row)))
 
     except mysql.connector.Error as err:
-        print("Fail", err)
+        # print("Fail", err)
+        print("Fail")
 
     finally:
         cursor.close()
