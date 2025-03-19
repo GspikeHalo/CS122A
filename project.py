@@ -83,31 +83,220 @@ def import_data(folderName):
 
 
 def insertViewer(uid, email, nickname, street, city, state, zip_code, genres, joined_date, first, last, subscription):
-    pass
+    # pass
+    # 还没测试
+
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    try:
+        # insert Users table
+        cursor.execute("""
+            INSERT INTO Users (uid, email, joined_date, nickname, street, city, state, zip, genres)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (uid, email, joined_date, nickname, street, city, state, zip_code, genres))
+
+        # insert Viewers table
+        cursor.execute("""
+            INSERT INTO Viewers (uid, subscription, first_name, last_name)
+            VALUES (%s, %s, %s, %s)
+        """, (uid, subscription, first, last))
+
+        conn.commit()
+        print("Success")
+    
+    except mysql.connector.Error as err:
+        print("Fail", err)
+
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def addGenre(uid, new_genre):
-    pass
+    # pass
+    # 还没测试
+
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("SELECT genres FROM Users WHERE uid = %s", (uid,))
+        result = cursor.fetchone()
+        if result:
+            current_genres = result[0]
+            updated_genres = current_genres + ";" + new_genre if current_genres else new_genre
+            cursor.execute("UPDATE Users SET genres = %s WHERE uid = %s", (updated_genres, uid))
+            conn.commit()
+            print("Success")
+        else:
+            print("Fail: User not found")
+
+    except mysql.connector.Error as err:
+        print("Fail", err)
+    
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def deleteViewer(uid):
-    pass
+    # pass
+    # 还没测试
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    try:
+        # 检查uid是否存在于Users
+        cursor.execute("SELECT uid FROM Users WHERE uid = %s", (uid,))
+        if not cursor.fetchone():
+            print("Fail: User not found")
+            return
+        
+        cursor.execute("DELETE FROM Users WHERE uid = %s", (uid,))
+        conn.commit()
+        print("Success")
+
+    except mysql.connector.Error as err:
+        print("Fail", err)
+    
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def insertMovie(rid, website_url):
-    pass
+    # pass
+    # 还没测试
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    try:
+        # 检查外键rid是否存在于Releases
+        cursor.execute("SELECT rid FROM Releases WHERE rid = %s", (rid,))
+        if not cursor.fetchone():
+            print("Fail: Release ID does not exist")
+            return
+        
+        cursor.execute("INSERT INTO Movies (rid, website_url) VALUES (%s, %s)", (rid, website_url))
+        conn.commit()
+        print("Success")
+
+    except mysql.connector.Error as err:
+        print("Fail", err)
+
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def insertSession(sid, uid, rid, ep_num, initiate_at, leave_at, quality, device):
-    pass
+    # pass
+    # 还没测试
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    try:
+        # 检查uid是否存在于Viewers
+        cursor.execute("SELECT uid FROM Viewers WHERE uid = %s", (uid,))
+        if not cursor.fetchone():
+            print("Fail: Viewer ID does not exist")
+            return
+        
+        # 检查rid, ep_num是否存在于Videos中
+        cursor.execute("SELECT rid FROM Videos WHERE rid = %s AND ep_num = %s", (rid, ep_num))
+        if not cursor.fetchone():
+            print("Fail: Video episode does not exist")
+            return
+        
+        # 检查时间戳是否有效
+        if initiate_at >= leave_at:
+            print("Fail: initiate_at must be earlier than leave_at")
+            return
+        
+        # 检查quality是否有效
+        valid_qualities = {"480p", "720p", "1080p"}
+        if quality not in valid_qualities:
+            print("Fail: Invalid quality. Must be one of", valid_qualities)
+            return
+        
+        # 检查device是否为有效
+        valid_devices = {"mobile", "desktop"}
+        if device not in valid_devices:
+            print("Fail: Invalid device. Must be one of", valid_devices)
+            return
+        
+        cursor.execute("""
+            INSERT INTO Sessions (sid, uid, rid, ep_num, initiate_at, leave_at, quality, device)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (sid, uid, rid, ep_num, initiate_at, leave_at, quality, device))
+
+        conn.commit()
+        print("Success")
+
+    except mysql.connector.Error as err:
+        print("Fail", err)
+
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def updateRelease(rid, title):
-    pass
+    # pass
+    # 还没测试
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    try:
+        # 检查rid是否存在
+        cursor.execute("SELECT rid FROM Releases WHERE rid = %s", (rid,))
+        if not cursor.fetchone():
+            print("Fail: Release ID does not exist")
+            return
+        
+        cursor.execute("UPDATE Releases SET title = %s WHERE rid = %s", (title, rid))
+        conn.commit()
+        print("Success")
+    
+    except mysql.connector.Error as err:
+        print("Fail", err)
+
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def listReleases(uid):
-    pass
+    # pass
+    # 还没测试
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    try:
+        # 查询uid用户评价过的release
+        cursor.execute("""
+            SELECT DISTINCT r.rid, r.genre, r.title
+            FROM Reviews rv
+            JOIN Releases r ON rv.rid = r.rid
+            WHERE rv.uid = %s
+            ORDER BY r.title ASC
+        """, (uid,))
+
+        results = cursor.fetchall()
+
+        if results:
+            for row in results:
+                print(",".join(map(str, row)))
+        else:
+            print("Fail: No reviewed releases found")
+
+    except mysql.connector.Error as err:
+        print("Fail", err)
+
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def popularRelease(N):
