@@ -178,7 +178,6 @@ def import_data(folderName):
             file_path = os.path.join(folderName, csv_file)
 
             if not os.path.exists(file_path):
-                print(f"File not found: {file_path}")
                 continue
 
             with open(file_path, 'r', encoding='utf-8') as f:
@@ -189,14 +188,10 @@ def import_data(folderName):
                 if rows:
                     cursor.executemany(insert_query, rows)
                     conn.commit()
-                    print(f"Inserted {len(rows)} rows into {table}")
-                else:
-                    print(f"No data in {csv_file}")
 
         print("Success")
     except Exception as e:
-        print("Fail", e)
-        raise
+        print("Fail")
     finally:
         cursor.close()
         conn.close()
