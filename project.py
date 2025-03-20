@@ -531,7 +531,29 @@ def activeViewer(N, start_date, end_date):
 
 
 def videosViewed(rid):
-    print("Working")
+    try:
+        conn = connect_db()
+        cursor = conn.cursor()
+
+        #use COALESCE to avoid print NULL
+        query = """
+                    SELECT v.rid, v.ep_num, v.title, v.length, COALESCE(
+                             (SELECT COUNT(DISTINCT s.uid)
+                              FROM Sessions s
+                              WHERE s.rid = v.rid), 0) AS viewCount
+                    FROM Videos v
+                    WHERE v.rid = %s
+                    ORDER BY v.rid DESC
+                """
+        cursor.execute(query, (rid,))
+        results = cursor.fetchall()
+        for row in results:
+            print(",".join(map(str, row)))
+    except Exception as e:
+        print("Fail")
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def main():
