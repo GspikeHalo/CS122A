@@ -540,7 +540,7 @@ def videosViewed(rid):
                     SELECT v.rid, v.ep_num, v.title, v.length, COALESCE(
                              (SELECT COUNT(DISTINCT s.uid)
                               FROM Sessions s
-                              WHERE s.rid = v.rid), 0) AS viewCount
+                              WHERE v.rid = s.rid), 0) AS viewCount
                     FROM Videos v
                     WHERE v.rid = %s
                     ORDER BY v.rid DESC
