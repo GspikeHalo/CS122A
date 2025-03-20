@@ -222,7 +222,8 @@ def insertViewer(uid, email, nickname, street, city, state, zip_code, genres, jo
         print("Success")
     
     except mysql.connector.Error as err:
-        print("Fail", err)
+        # print("Fail", err)
+        print("Fail")
 
     finally:
         cursor.close()
@@ -286,7 +287,8 @@ def deleteViewer(uid):
         # 检查uid是否存在于Users
         cursor.execute("SELECT uid FROM Users WHERE uid = %s", (uid,))
         if not cursor.fetchone():
-            print("Fail: User not found")
+            # print("Fail: User not found")
+            print("Fail")
             return
         
         cursor.execute("DELETE FROM Users WHERE uid = %s", (uid,))
@@ -294,7 +296,8 @@ def deleteViewer(uid):
         print("Success")
 
     except mysql.connector.Error as err:
-        print("Fail", err)
+        # print("Fail", err)
+        print("Fail")
     
     finally:
         cursor.close()
@@ -311,7 +314,8 @@ def insertMovie(rid, website_url):
         # 检查外键rid是否存在于Releases
         cursor.execute("SELECT rid FROM Releases WHERE rid = %s", (rid,))
         if not cursor.fetchone():
-            print("Fail: Release ID does not exist")
+            # print("Fail: Release ID does not exist")
+            print("Fail")
             return
         
         cursor.execute("INSERT INTO Movies (rid, website_url) VALUES (%s, %s)", (rid, website_url))
@@ -319,7 +323,8 @@ def insertMovie(rid, website_url):
         print("Success")
 
     except mysql.connector.Error as err:
-        print("Fail", err)
+        # print("Fail", err)
+        print("Fail")
 
     finally:
         cursor.close()
@@ -336,30 +341,35 @@ def insertSession(sid, uid, rid, ep_num, initiate_at, leave_at, quality, device)
         # 检查uid是否存在于Viewers
         cursor.execute("SELECT uid FROM Viewers WHERE uid = %s", (uid,))
         if not cursor.fetchone():
-            print("Fail: Viewer ID does not exist")
+            # print("Fail: Viewer ID does not exist")
+            print("Fail")
             return
         
         # 检查rid, ep_num是否存在于Videos中
         cursor.execute("SELECT rid FROM Videos WHERE rid = %s AND ep_num = %s", (rid, ep_num))
         if not cursor.fetchone():
-            print("Fail: Video episode does not exist")
+            # print("Fail: Video episode does not exist")
+            print("Fail")
             return
         
         # 检查时间戳是否有效
         if initiate_at >= leave_at:
-            print("Fail: initiate_at must be earlier than leave_at")
+            # print("Fail: initiate_at must be earlier than leave_at")
+            print("Fail")
             return
         
         # 检查quality是否有效
         valid_qualities = {"480p", "720p", "1080p"}
         if quality not in valid_qualities:
-            print("Fail: Invalid quality. Must be one of", valid_qualities)
+            # print("Fail: Invalid quality. Must be one of", valid_qualities)
+            print("Fail")
             return
         
         # 检查device是否为有效
         valid_devices = {"mobile", "desktop"}
         if device not in valid_devices:
-            print("Fail: Invalid device. Must be one of", valid_devices)
+            # print("Fail: Invalid device. Must be one of", valid_devices)
+            print("Fail")
             return
         
         cursor.execute("""
@@ -371,7 +381,8 @@ def insertSession(sid, uid, rid, ep_num, initiate_at, leave_at, quality, device)
         print("Success")
 
     except mysql.connector.Error as err:
-        print("Fail", err)
+        # print("Fail", err)
+        print("Fail")
 
     finally:
         cursor.close()
@@ -388,7 +399,8 @@ def updateRelease(rid, title):
         # 检查rid是否存在
         cursor.execute("SELECT rid FROM Releases WHERE rid = %s", (rid,))
         if not cursor.fetchone():
-            print("Fail: Release ID does not exist")
+            # print("Fail: Release ID does not exist")
+            print("Fail")
             return
         
         cursor.execute("UPDATE Releases SET title = %s WHERE rid = %s", (title, rid))
@@ -396,7 +408,8 @@ def updateRelease(rid, title):
         print("Success")
     
     except mysql.connector.Error as err:
-        print("Fail", err)
+        # print("Fail", err)
+        print("Fail")
 
     finally:
         cursor.close()
