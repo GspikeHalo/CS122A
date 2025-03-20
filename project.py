@@ -30,7 +30,6 @@ def import_data(folderName):
             cursor.execute(drop_sql)
         conn.commit()
 
-        # 根据测试反馈，有些参数设置的不够长会报错，现已修改
         create_statements = [
             """
             CREATE TABLE Users (
@@ -199,8 +198,6 @@ def import_data(folderName):
 
 
 def insertViewer(uid, email, nickname, street, city, state, zip_code, genres, joined_date, first, last, subscription):
-    # pass
-    # 还没测试
 
     conn = connect_db()
     cursor = conn.cursor()
@@ -231,8 +228,6 @@ def insertViewer(uid, email, nickname, street, city, state, zip_code, genres, jo
 
 
 def addGenre(uid, new_genre):
-    # pass
-    # 还没测试
 
     conn = connect_db()
     cursor = conn.cursor()
@@ -244,22 +239,17 @@ def addGenre(uid, new_genre):
         if result:
             current_genres = result[0]
 
-            # None值处理
             if current_genres is None:
                 current_genres_list = []
             else:
-                # 分割现有genres并转换为小写
                 current_genres_list = [g.strip().lower() for g in current_genres.split(';')]
 
-            # 统一new_genre格式
             new_genre_lower = new_genre.strip().lower()
 
-            # 检查是否已存在
             if new_genre_lower in current_genres_list:
                 print("Fail")
                 return
 
-            # 添加新genre
             updated_genres = ";".join(current_genres_list + [new_genre_lower])
             cursor.execute("UPDATE Users SET genres = %s WHERE uid = %s", (updated_genres, uid))
             conn.commit()
@@ -278,13 +268,10 @@ def addGenre(uid, new_genre):
 
 
 def deleteViewer(uid):
-    # pass
-    # 还没测试
     conn = connect_db()
     cursor = conn.cursor()
 
     try:
-        # 检查uid是否存在于Users
         cursor.execute("SELECT uid FROM Users WHERE uid = %s", (uid,))
         if not cursor.fetchone():
             # print("Fail: User not found")
@@ -305,13 +292,10 @@ def deleteViewer(uid):
 
 
 def insertMovie(rid, website_url):
-    # pass
-    # 还没测试
     conn = connect_db()
     cursor = conn.cursor()
 
     try:
-        # 检查外键rid是否存在于Releases
         cursor.execute("SELECT rid FROM Releases WHERE rid = %s", (rid,))
         if not cursor.fetchone():
             # print("Fail: Release ID does not exist")
@@ -332,13 +316,10 @@ def insertMovie(rid, website_url):
 
 
 def insertSession(sid, uid, rid, ep_num, initiate_at, leave_at, quality, device):
-    # pass
-    # 还没测试
     conn = connect_db()
     cursor = conn.cursor()
 
     try:
-        # 检查uid是否存在于Viewers
         cursor.execute("SELECT uid FROM Viewers WHERE uid = %s", (uid,))
         if not cursor.fetchone():
             # print("Fail: Viewer ID does not exist")
@@ -351,21 +332,18 @@ def insertSession(sid, uid, rid, ep_num, initiate_at, leave_at, quality, device)
             # print("Fail: Video episode does not exist")
             print("Fail")
             return
-        
-        # 检查时间戳是否有效
+
         if initiate_at >= leave_at:
             # print("Fail: initiate_at must be earlier than leave_at")
             print("Fail")
             return
-        
-        # 检查quality是否有效
+
         valid_qualities = {"480p", "720p", "1080p"}
         if quality not in valid_qualities:
             # print("Fail: Invalid quality. Must be one of", valid_qualities)
             print("Fail")
             return
-        
-        # 检查device是否为有效
+
         valid_devices = {"mobile", "desktop"}
         if device not in valid_devices:
             # print("Fail: Invalid device. Must be one of", valid_devices)
@@ -390,13 +368,10 @@ def insertSession(sid, uid, rid, ep_num, initiate_at, leave_at, quality, device)
 
 
 def updateRelease(rid, title):
-    # pass
-    # 还没测试
     conn = connect_db()
     cursor = conn.cursor()
 
     try:
-        # 检查rid是否存在
         cursor.execute("SELECT rid FROM Releases WHERE rid = %s", (rid,))
         if not cursor.fetchone():
             # print("Fail: Release ID does not exist")
@@ -417,13 +392,10 @@ def updateRelease(rid, title):
 
 
 def listReleases(uid):
-    # pass
-    # 还没测试
     conn = connect_db()
     cursor = conn.cursor()
 
     try:
-        # 查询uid用户评价过的release
         cursor.execute("""
             SELECT DISTINCT r.rid, r.genre, r.title
             FROM Reviews rv
@@ -441,7 +413,6 @@ def listReleases(uid):
         #     # print("Fail: No reviewed releases found")
         #     print("Fail")
 
-        # 当没有结果时不输出Fail
         for row in results:
             print(",".join(map(str, row)))
 
