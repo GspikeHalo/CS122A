@@ -97,7 +97,7 @@ def import_data(folderName):
               ep_num INTEGER NOT NULL,
               rid INTEGER NOT NULL,
               title VARCHAR(100),
-              length REAL,
+              length INTEGER,
               PRIMARY KEY (ep_num, rid),
               FOREIGN KEY (rid) REFERENCES Releases(rid) ON DELETE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -493,6 +493,7 @@ def releaseTitle(sid):
                 WHERE s.rid = v.rid AND s.ep_num = v.ep_num AND v.rid = r.rid AND s.sid = %s
                 ORDER BY r.title ASC
             """
+
         cursor.execute(query, (sid,))
         results = cursor.fetchall()
 
@@ -506,7 +507,27 @@ def releaseTitle(sid):
 
 
 def activeViewer(N, start_date, end_date):
-    print("Working")
+    try:
+        conn = connect_db()
+        cursor = conn.cursor()
+
+        query = """
+                SELECT v.uid, v.first_name, v.last_name
+                FROM Viewers v, Sessions s
+                WHERE v.uid = s.uid AND s.initiate_at >= %s AND s.initiate_at <= %s
+                GROUP BY v.uid, v.first_name, v.last_name
+                HAVING COUNT(*) >= %s
+                ORDER BY v.uid ASC
+            """
+        cursor.execute(query, (start_date, end_date, int(N)))
+        results = cursor.fetchall()
+        for row in results:
+            print(",".join(map(str, row)))
+    except Exception as e:
+        print("Fail")
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def videosViewed(rid):
