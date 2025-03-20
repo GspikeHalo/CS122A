@@ -325,8 +325,7 @@ def insertSession(sid, uid, rid, ep_num, initiate_at, leave_at, quality, device)
             # print("Fail: Viewer ID does not exist")
             print("Fail")
             return
-        
-        # 检查rid, ep_num是否存在于Videos中
+
         cursor.execute("SELECT rid FROM Videos WHERE rid = %s AND ep_num = %s", (rid, ep_num))
         if not cursor.fetchone():
             # print("Fail: Video episode does not exist")
