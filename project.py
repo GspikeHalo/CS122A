@@ -455,11 +455,54 @@ def listReleases(uid):
 
 
 def popularRelease(N):
-    print("Working")
+    try:
+        conn = connect_db()
+        cursor = conn.cursor()
+
+        # left join to keep all release
+        N = int(N)
+        query = """
+                SELECT r.rid, r.title, COUNT(rv.rvid) AS reviewCount
+                FROM Releases r
+                LEFT JOIN Reviews rv ON r.rid = rv.rid
+                GROUP BY r.rid, r.title
+                ORDER BY reviewCount DESC, r.rid DESC
+                LIMIT %s
+            """
+        cursor.execute(query, (N,))
+        results = cursor.fetchall()
+
+        for row in results:
+            print(",".join(map(str, row)))
+
+        cursor.close()
+        conn.close()
+
+    except Exception as e:
+        print("Fail")
 
 
 def releaseTitle(sid):
-    print("Working")
+    try:
+        conn = connect_db()
+        cursor = conn.cursor()
+
+        query = """
+                SELECT r.rid, r.title, r.genre, v.title, v.ep_num, v.length
+                FROM Sessions s, Videos v, Releases r
+                WHERE s.rid = v.rid AND s.ep_num = v.ep_num AND v.rid = r.rid AND s.sid = %s
+                ORDER BY r.title ASC
+            """
+        cursor.execute(query, (sid,))
+        results = cursor.fetchall()
+
+        for row in results:
+            print(",".join(map(str, row)))
+    except Exception as e:
+        print("Fail")
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def activeViewer(N, start_date, end_date):
